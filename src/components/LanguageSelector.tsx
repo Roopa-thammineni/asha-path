@@ -31,10 +31,12 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         variant="icon"
         size="icon"
         onClick={() => setLanguage(nextLang.code)}
-        className={cn('gap-2', className)}
+        className={cn('gap-2 px-4', className)}
       >
-        <Globe size={20} />
-        <span className="text-sm font-semibold">{languages.find(l => l.code === language)?.native}</span>
+        <Globe size={18} className="text-primary" />
+        <span className="text-sm font-semibold text-foreground">
+          {languages.find(l => l.code === language)?.native}
+        </span>
       </Button>
     );
   }
@@ -46,7 +48,10 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           key={lang.code}
           variant={language === lang.code ? 'default' : 'outline'}
           onClick={() => setLanguage(lang.code)}
-          className="flex-1 h-16"
+          className={cn(
+            'flex-1 h-16',
+            language === lang.code && 'shadow-glow'
+          )}
         >
           <span className="text-lg font-semibold">{lang.native}</span>
         </Button>

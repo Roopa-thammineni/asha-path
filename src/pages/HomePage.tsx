@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, BookOpen, MessageCircle, Sparkles, TrendingUp } from 'lucide-react';
+import { Briefcase, BookOpen, MessageCircle, Sparkles, TrendingUp, Heart } from 'lucide-react';
 import { IconCard } from '@/components/IconCard';
 import { VoiceButton } from '@/components/VoiceButton';
 import { EmergencyButton } from '@/components/EmergencyButton';
@@ -27,14 +27,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 gradient-hero">
+    <div className="min-h-screen pb-28 px-4 pt-6">
       {/* Header */}
-      <header className="flex items-center justify-between mb-6">
+      <header className="flex items-center justify-between mb-8 animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-gradient">
             {t('welcome', language)}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-1">
             {t('welcomeMessage', language)}
           </p>
         </div>
@@ -42,73 +42,85 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </header>
 
       {/* Voice Button - Central Feature */}
-      <div className="flex justify-center my-8">
+      <div className="flex justify-center my-10 animate-fade-in-up stagger-1">
         <VoiceButton size="xl" onPress={handleVoicePress} />
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <IconCard
-          icon={MessageCircle}
-          label={t('businessGuide', language)}
-          variant="primary"
-          size="lg"
-          onClick={() => onNavigate('guide')}
-        />
-        <IconCard
-          icon={Briefcase}
-          label={t('findWork', language)}
-          variant="success"
-          size="lg"
-          onClick={() => onNavigate('jobs')}
-        />
-        <IconCard
-          icon={BookOpen}
-          label={t('learnSkills', language)}
-          variant="outline"
-          size="lg"
-          onClick={() => onNavigate('learn')}
-        />
-        <IconCard
-          icon={Sparkles}
-          label={t('governmentSchemes', language)}
-          variant="default"
-          size="lg"
-          badge="New"
-          onClick={() => onNavigate('guide')}
-        />
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="animate-fade-in-up stagger-2">
+          <IconCard
+            icon={MessageCircle}
+            label={t('businessGuide', language)}
+            variant="primary"
+            size="lg"
+            onClick={() => onNavigate('guide')}
+          />
+        </div>
+        <div className="animate-fade-in-up stagger-3">
+          <IconCard
+            icon={Briefcase}
+            label={t('findWork', language)}
+            variant="success"
+            size="lg"
+            onClick={() => onNavigate('jobs')}
+          />
+        </div>
+        <div className="animate-fade-in-up stagger-4">
+          <IconCard
+            icon={BookOpen}
+            label={t('learnSkills', language)}
+            variant="outline"
+            size="lg"
+            onClick={() => onNavigate('learn')}
+          />
+        </div>
+        <div className="animate-fade-in-up stagger-5">
+          <IconCard
+            icon={Sparkles}
+            label={t('governmentSchemes', language)}
+            variant="default"
+            size="lg"
+            badge="New"
+            onClick={() => onNavigate('guide')}
+          />
+        </div>
       </div>
 
       {/* Impact Stats */}
-      <div className="bg-card rounded-3xl p-5 shadow-soft mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp size={20} className="text-accent" />
+      <div className="glass-card p-6 mb-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+        <div className="flex items-center gap-2 mb-5">
+          <div className="p-2 rounded-xl bg-primary/10">
+            <TrendingUp size={20} className="text-primary" />
+          </div>
           <h2 className="font-semibold text-foreground">Community Impact</h2>
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-primary">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-3 rounded-2xl bg-lavender-light/30">
+            <p className="text-2xl font-bold text-lavender-dark">
               {(impactStats.totalUsers / 1000).toFixed(1)}K
             </p>
-            <p className="text-xs text-muted-foreground">Women</p>
+            <p className="text-xs text-muted-foreground mt-1">Women</p>
           </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-accent">
+          <div className="text-center p-3 rounded-2xl bg-emerald-light/30">
+            <p className="text-2xl font-bold text-emerald-dark">
               {(impactStats.businessesStarted / 1000).toFixed(1)}K
             </p>
-            <p className="text-xs text-muted-foreground">Businesses</p>
+            <p className="text-xs text-muted-foreground mt-1">Businesses</p>
           </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-forest">
+          <div className="text-center p-3 rounded-2xl bg-blush-light/30">
+            <p className="text-2xl font-bold text-blush-dark">
               {impactStats.incomeGenerated}
             </p>
-            <p className="text-xs text-muted-foreground">Earned</p>
+            <p className="text-xs text-muted-foreground mt-1">Earned</p>
           </div>
         </div>
       </div>
 
       {/* Emergency Button */}
-      <EmergencyButton />
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+        <EmergencyButton />
+      </div>
     </div>
   );
 };

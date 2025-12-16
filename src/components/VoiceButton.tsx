@@ -22,30 +22,30 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
   const sizeClasses = {
     default: 'h-16 w-16',
     lg: 'h-20 w-20',
-    xl: 'h-24 w-24',
+    xl: 'h-28 w-28',
   };
 
   const iconSizes = {
     default: 24,
     lg: 32,
-    xl: 40,
+    xl: 44,
   };
 
   return (
-    <div className="relative flex flex-col items-center gap-3">
+    <div className="relative flex flex-col items-center gap-4">
       {/* Pulse rings */}
       {(isListening || isSpeaking) && (
         <>
           <span
             className={cn(
               'absolute inset-0 rounded-full animate-pulse-ring',
-              isListening ? 'bg-voice-listening' : 'bg-voice-speaking'
+              isListening ? 'bg-lavender' : 'bg-blush'
             )}
           />
           <span
             className={cn(
               'absolute inset-0 rounded-full animate-pulse-ring [animation-delay:0.5s]',
-              isListening ? 'bg-voice-listening' : 'bg-voice-speaking'
+              isListening ? 'bg-lavender' : 'bg-blush'
             )}
           />
         </>
@@ -56,18 +56,19 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
         onClick={onPress}
         className={cn(
           sizeClasses[size],
-          'relative z-10',
-          isListening && 'bg-sky shadow-[0_0_30px_hsl(200_80%_55%_/_0.5)]',
-          isSpeaking && 'bg-primary shadow-glow',
+          'relative z-10 gradient-primary shadow-glow animate-glow',
+          'hover:shadow-[0_0_50px_hsl(262_83%_75%_/_0.5)] transition-all duration-300',
+          isListening && 'bg-lavender shadow-[0_0_40px_hsl(262_83%_75%_/_0.6)]',
+          isSpeaking && 'gradient-blush shadow-[0_0_40px_hsl(350_70%_75%_/_0.6)]',
           className
         )}
       >
         {isSpeaking ? (
-          <Volume2 size={iconSizes[size]} className="text-primary-foreground" />
+          <Volume2 size={iconSizes[size]} className="text-white" />
         ) : isListening ? (
-          <Mic size={iconSizes[size]} className="text-primary-foreground animate-pulse" />
+          <Mic size={iconSizes[size]} className="text-white animate-pulse" />
         ) : (
-          <Mic size={iconSizes[size]} className="text-primary-foreground" />
+          <Mic size={iconSizes[size]} className="text-white" />
         )}
       </Button>
 
