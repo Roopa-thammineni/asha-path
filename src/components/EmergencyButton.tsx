@@ -22,14 +22,20 @@ export const EmergencyButton: React.FC<EmergencyButtonProps> = ({ className }) =
       variant="emergency"
       size="lg"
       onClick={handleEmergency}
-      className={cn('w-full gap-3', className)}
+      className={cn(
+        'w-full gap-3 rounded-2xl',
+        'bg-gradient-to-r from-destructive to-destructive/80',
+        className
+      )}
     >
-      <Shield size={24} />
+      <div className="p-2 bg-white/20 rounded-xl">
+        <Shield size={22} />
+      </div>
       <span className="flex flex-col items-start">
         <span className="text-base font-bold">{t('emergency', language)}</span>
         <span className="text-xs opacity-80">{t('callNow', language)} - 181</span>
       </span>
-      <Phone size={20} className="ml-auto" />
+      <Phone size={20} className="ml-auto animate-bounce-soft" />
     </Button>
   );
 };

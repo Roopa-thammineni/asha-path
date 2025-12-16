@@ -26,10 +26,10 @@ export const IconCard: React.FC<IconCardProps> = ({
   className,
 }) => {
   const variants = {
-    default: 'bg-card hover:bg-card/80',
-    primary: 'gradient-primary text-primary-foreground',
-    success: 'gradient-success text-accent-foreground',
-    outline: 'bg-transparent border-2 border-primary text-primary hover:bg-primary/10',
+    default: 'glass-card hover:shadow-medium hover:border-lavender-light/50',
+    primary: 'gradient-primary text-white border-0 hover:shadow-glow',
+    success: 'gradient-accent text-white border-0 hover:shadow-glow-emerald',
+    outline: 'glass-card border-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50',
   };
 
   const sizes = {
@@ -49,9 +49,9 @@ export const IconCard: React.FC<IconCardProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'relative flex flex-col items-center justify-center rounded-3xl shadow-soft transition-all duration-200',
-        'min-h-touch min-w-touch',
-        'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+        'relative flex flex-col items-center justify-center rounded-3xl transition-all duration-300',
+        'min-h-touch min-w-touch hover-lift',
+        'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2',
         variants[variant],
         sizes[size],
         disabled && 'opacity-50 pointer-events-none',
@@ -59,7 +59,7 @@ export const IconCard: React.FC<IconCardProps> = ({
       )}
     >
       {badge && (
-        <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+        <span className="absolute -top-2 -right-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-soft animate-bounce-soft">
           {badge}
         </span>
       )}
@@ -67,6 +67,7 @@ export const IconCard: React.FC<IconCardProps> = ({
       <Icon 
         size={iconSizes[size]} 
         className={cn(
+          'transition-transform duration-300',
           variant === 'default' && 'text-primary',
           variant === 'outline' && 'text-primary'
         )} 
@@ -77,6 +78,7 @@ export const IconCard: React.FC<IconCardProps> = ({
         size === 'sm' && 'text-sm',
         size === 'default' && 'text-base',
         size === 'lg' && 'text-lg',
+        variant === 'default' && 'text-foreground'
       )}>
         {label}
       </span>

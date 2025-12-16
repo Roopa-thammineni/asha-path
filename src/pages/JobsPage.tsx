@@ -25,43 +25,43 @@ export const JobsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
+    <div className="min-h-screen pb-28 px-4 pt-6">
       {/* Header */}
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">
+      <header className="mb-6 animate-fade-in-up">
+        <h1 className="text-2xl font-bold text-gradient">
           {t('findWork', language)}
         </h1>
         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-          <MapPin size={14} />
+          <MapPin size={14} className="text-primary" />
           <span>Jobs near you</span>
         </div>
       </header>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="bg-card rounded-2xl p-3 text-center shadow-soft">
-          <p className="text-xl font-bold text-primary">{jobs.length}</p>
-          <p className="text-xs text-muted-foreground">Available</p>
+      <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in-up stagger-1">
+        <div className="glass-card p-4 text-center">
+          <p className="text-xl font-bold text-lavender-dark">{jobs.length}</p>
+          <p className="text-xs text-muted-foreground mt-1">Available</p>
         </div>
-        <div className="bg-card rounded-2xl p-3 text-center shadow-soft">
-          <p className="text-xl font-bold text-accent">{jobs.filter(j => j.verified).length}</p>
-          <p className="text-xs text-muted-foreground">{t('verified', language)}</p>
+        <div className="glass-card p-4 text-center">
+          <p className="text-xl font-bold text-emerald-dark">{jobs.filter(j => j.verified).length}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('verified', language)}</p>
         </div>
-        <div className="bg-card rounded-2xl p-3 text-center shadow-soft">
-          <p className="text-xl font-bold text-forest">5 km</p>
-          <p className="text-xs text-muted-foreground">Radius</p>
+        <div className="glass-card p-4 text-center">
+          <p className="text-xl font-bold text-blush-dark">5 km</p>
+          <p className="text-xs text-muted-foreground mt-1">Radius</p>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4 animate-fade-in-up stagger-2">
         {['All', '📅 Daily', '📆 Weekly', '📇 Monthly'].map((filter, i) => (
           <button
             key={filter}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+            className={`px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
               i === 0 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                ? 'gradient-primary text-white shadow-soft' 
+                : 'glass-card text-foreground hover:shadow-soft'
             }`}
           >
             {filter}
@@ -74,7 +74,8 @@ export const JobsPage: React.FC = () => {
         {jobs.map((job, index) => (
           <div 
             key={job.id}
-            style={{ animationDelay: `${index * 100}ms` }}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${(index + 3) * 0.1}s` }}
           >
             <JobCard 
               job={job} 
