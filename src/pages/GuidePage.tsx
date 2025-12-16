@@ -1,44 +1,89 @@
 import React, { useState } from 'react';
-import { MapPin, Wallet, Wrench, ArrowRight, Sparkles } from 'lucide-react';
-import { VoiceButton } from '@/components/VoiceButton';
-import { IconCard } from '@/components/IconCard';
+import { Sparkles, Loader2, ArrowRight, Play, CheckCircle2 } from 'lucide-react';
 import { BusinessCard } from '@/components/BusinessCard';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/contexts/AppContext';
 import { t } from '@/lib/translations';
-import { businessIdeas, skills } from '@/data/mockData';
+import { skills as mockSkills } from '@/data/mockData';
 import { BusinessIdea } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { getBusinessSuggestions } from '@/lib/gemini'; 
 
 type Step = 'start' | 'location' | 'budget' | 'skills' | 'results';
 
 export const GuidePage: React.FC = () => {
-  const { language, setVoiceState } = useApp();
+  const { language } = useApp();
   const { toast } = useToast();
   const [step, setStep] = useState<Step>('start');
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<Partial<BusinessIdea>[]>([]);
   const [selections, setSelections] = useState({
     location: '',
     budget: '',
     skills: [] as string[],
   });
 
-  const handleVoicePress = () => {
-    setVoiceState({ isListening: true });
-    setTimeout(() => {
-      setVoiceState({ isListening: false, isSpeaking: true });
-      setTimeout(() => {
-        setVoiceState({ isSpeaking: false });
-        setStep('location');
-      }, 1500);
-    }, 2000);
-  };
+  const handleGenerateBusiness = async () => {
+    setIsLoading(true);
+    setStep('results');
+    
+    try {
+      const suggestions = await getBusinessSuggestions(
+        selections.location,
+        selections.budget,
+        selections.skills,
+        language
+      );
+      setAiSuggestions(suggestions);
+    } catch (error: any) {
+      console.warn("AI logic failed, using local fallback data:", error.message);
+      
+      // Fallback logic using if/else blocks based on selected skills
+      let fallbackData: Partial<BusinessIdea>[] = [];
 
-  const handleSelectBusiness = (business: BusinessIdea) => {
-    toast({
-      title: '🎉 Great Choice!',
-      description: 'We will guide you to start this business',
-    });
+      if (selections.skills.includes('cooking')) {
+        fallbackData = [
+          {
+            name: language === 'hi' ? 'टिफिन सर्विस' : 'Home Tiffin Service',
+            estimatedIncome: "₹8,000 - ₹12,000",
+            difficulty: "low",
+            demand: "high",
+            description: "Cook healthy meals for workers and students in your area."
+          },
+          {
+            name: language === 'hi' ? 'अचार बनाना' : 'Pickle Making',
+            estimatedIncome: "₹4,000 - ₹7,000",
+            difficulty: "low",
+            demand: "medium",
+            description: "Prepare traditional snacks and sell at local markets."
+          }
+        ];
+      } else if (selections.skills.includes('stitching')) {
+        fallbackData = [
+          {
+            name: language === 'hi' ? 'सिलाई केंद्र' : 'Boutique & Tailoring',
+            estimatedIncome: "₹6,000 - ₹15,000",
+            difficulty: "medium",
+            demand: "high",
+            description: "Start a tailoring unit for dresses and alterations."
+          }
+        ];
+      } else {
+        fallbackData = [
+          {
+            name: language === 'hi' ? 'किराना दुकान' : 'Provision Store',
+            estimatedIncome: "₹10,000 - ₹15,000",
+            difficulty: "medium",
+            demand: "high",
+            description: "Open a small shop for daily essentials."
+          }
+        ];
+      }
+      setAiSuggestions(fallbackData);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const locations = [
@@ -56,25 +101,17 @@ export const GuidePage: React.FC = () => {
   if (step === 'start') {
     return (
       <div className="min-h-screen pb-28 px-4 pt-6 flex flex-col items-center justify-center">
-        <div className="text-center mb-8 animate-fade-in-up">
+        <div className="text-center mb-10 animate-fade-in-up">
           <div className="w-24 h-24 rounded-full gradient-primary mx-auto mb-5 flex items-center justify-center shadow-glow animate-glow">
             <Sparkles size={44} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gradient mb-2">
-            {t('businessGuide', language)}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('askMe', language)}
-          </p>
+          <h1 className="text-2xl font-bold text-gradient mb-2">{t('businessGuide', language)}</h1>
+          <p className="text-muted-foreground px-6">Answer 3 questions to get your personalized plan.</p>
         </div>
-        
-        <div className="animate-fade-in-up stagger-2">
-          <VoiceButton size="xl" onPress={handleVoicePress} />
-        </div>
-        
-        <p className="text-sm text-muted-foreground mt-8 text-center max-w-xs animate-fade-in-up stagger-3">
-          Tap the button and tell me about yourself. I'll suggest the best business for you!
-        </p>
+        <Button size="xl" className="w-full max-w-xs gap-3" onClick={() => setStep('location')}>
+          <Play fill="currentColor" size={20} />
+          Start Now
+        </Button>
       </div>
     );
   }
@@ -83,12 +120,9 @@ export const GuidePage: React.FC = () => {
     return (
       <div className="min-h-screen pb-28 px-4 pt-6">
         <header className="mb-6 animate-fade-in-up">
-          <h1 className="text-2xl font-bold text-gradient">
-            {t('location', language)}
-          </h1>
+          <h1 className="text-2xl font-bold text-gradient">{t('location', language)}</h1>
           <p className="text-sm text-muted-foreground mt-1">Where do you live?</p>
         </header>
-
         <div className="grid grid-cols-1 gap-4">
           {locations.map((loc, index) => (
             <button
@@ -97,10 +131,7 @@ export const GuidePage: React.FC = () => {
                 setSelections(s => ({ ...s, location: loc.id }));
                 setStep('budget');
               }}
-              className={cn(
-                'flex items-center gap-4 p-5 glass-card transition-all duration-300 active:scale-[0.98] hover-lift animate-fade-in-up',
-                selections.location === loc.id && 'ring-2 ring-primary shadow-glow'
-              )}
+              className="flex items-center gap-4 p-5 glass-card transition-all duration-300 hover-lift animate-fade-in-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <span className="text-4xl">{loc.icon}</span>
@@ -117,24 +148,18 @@ export const GuidePage: React.FC = () => {
     return (
       <div className="min-h-screen pb-28 px-4 pt-6">
         <header className="mb-6 animate-fade-in-up">
-          <h1 className="text-2xl font-bold text-gradient">
-            {t('budget', language)}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">How much can you invest?</p>
+          <h1 className="text-2xl font-bold text-gradient">{t('budget', language)}</h1>
+          <p className="text-sm text-muted-foreground mt-1">What is your investment budget?</p>
         </header>
-
         <div className="grid grid-cols-1 gap-4">
           {budgets.map((budget, index) => (
             <button
               key={budget.id}
               onClick={() => {
-                setSelections(s => ({ ...s, budget: budget.id }));
+                setSelections(s => ({ ...s, budget: budget.label }));
                 setStep('skills');
               }}
-              className={cn(
-                'flex items-center gap-4 p-5 glass-card transition-all duration-300 active:scale-[0.98] hover-lift animate-fade-in-up',
-                selections.budget === budget.id && 'ring-2 ring-primary shadow-glow'
-              )}
+              className="flex items-center gap-4 p-5 glass-card transition-all duration-300 hover-lift animate-fade-in-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <span className="text-3xl">{budget.icon}</span>
@@ -151,105 +176,81 @@ export const GuidePage: React.FC = () => {
     return (
       <div className="min-h-screen pb-28 px-4 pt-6">
         <header className="mb-6 animate-fade-in-up">
-          <h1 className="text-2xl font-bold text-gradient">
-            {t('skills', language)}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">What can you do?</p>
+          <h1 className="text-2xl font-bold text-gradient">{t('skills', language)}</h1>
+          <p className="text-sm text-muted-foreground mt-1">What are you good at?</p>
         </header>
-
         <div className="grid grid-cols-2 gap-4 mb-6">
-          {skills.map((skill, index) => {
+          {mockSkills.map((skill, index) => {
             const isSelected = selections.skills.includes(skill.id);
             const name = language === 'hi' ? skill.nameHi : language === 'te' ? skill.nameTe : skill.name;
-            
             return (
               <button
                 key={skill.id}
                 onClick={() => {
                   setSelections(s => ({
                     ...s,
-                    skills: isSelected 
-                      ? s.skills.filter(id => id !== skill.id)
-                      : [...s.skills, skill.id]
+                    skills: isSelected ? s.skills.filter(id => id !== skill.id) : [...s.skills, skill.id]
                   }));
                 }}
                 className={cn(
-                  'flex flex-col items-center gap-2 p-5 glass-card transition-all duration-300 active:scale-[0.98] hover-lift animate-fade-in-up',
-                  isSelected && 'ring-2 ring-accent bg-emerald-light/20 shadow-glow-emerald'
+                  'flex flex-col items-center gap-2 p-5 glass-card transition-all duration-300',
+                  isSelected && 'ring-2 ring-primary bg-primary/5 shadow-glow'
                 )}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <span className="text-4xl">{skill.icon}</span>
-                <span className="text-base font-semibold text-foreground">{name}</span>
+                <span className="text-base font-semibold">{name}</span>
+                {isSelected && <CheckCircle2 size={16} className="text-primary mt-1" />}
               </button>
             );
           })}
         </div>
-
-        <Button 
-          variant="default" 
-          size="xl" 
-          className="w-full animate-fade-in-up"
-          style={{ animationDelay: '0.6s' }}
-          onClick={() => setStep('results')}
-        >
-          {t('getStarted', language)}
-          <ArrowRight size={24} />
+        <Button className="w-full gap-2" size="lg" onClick={handleGenerateBusiness} disabled={selections.skills.length === 0}>
+          Find My Business <ArrowRight size={20} />
         </Button>
       </div>
     );
   }
 
-  // Results
-  return (
-    <div className="min-h-screen pb-28 px-4 pt-6">
-      <header className="mb-6 animate-fade-in-up">
-        <h1 className="text-2xl font-bold text-gradient">
-          {t('suggestedBusiness', language)}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Based on your profile
-        </p>
-      </header>
-
-      <div className="space-y-4">
-        {businessIdeas.slice(0, 3).map((business, index) => (
-          <div 
-            key={business.id}
-            className="animate-fade-in-up"
-            style={{ animationDelay: `${index * 0.15}s` }}
-          >
-            <BusinessCard 
-              business={business} 
-              onSelect={handleSelectBusiness}
-            />
+  if (step === 'results') {
+    return (
+      <div className="min-h-screen pb-28 px-4 pt-6">
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-gradient flex items-center gap-2">
+            <Sparkles className="text-primary" /> {t('suggestedBusiness', language)}
+          </h1>
+        </header>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+            <Loader2 className="h-12 w-12 text-primary animate-spin" />
+            <p className="text-lg font-medium animate-pulse text-muted-foreground">Consulting AI experts...</p>
           </div>
-        ))}
+        ) : (
+          <div className="space-y-4">
+            {aiSuggestions.map((biz, index) => (
+              <BusinessCard 
+                key={index}
+                business={{
+                  ...biz,
+                  id: `ai-${index}`,
+                  icon: '💡',
+                  sustainable: true,
+                  requiredBudget: selections.budget,
+                  nameHi: biz.name || '',
+                  nameTe: biz.name || '',
+                  descriptionHi: biz.description || '',
+                  descriptionTe: biz.description || '',
+                } as BusinessIdea}
+              />
+            ))}
+            <Button variant="outline" className="w-full mt-6" onClick={() => setStep('start')}>
+              Start Over
+            </Button>
+          </div>
+        )}
       </div>
+    );
+  }
 
-      {/* Support Options */}
-      <div className="mt-6 space-y-3 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-        <h3 className="font-semibold text-foreground">{t('communitySupport', language)}</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <button className="p-4 glass-card text-center hover-lift transition-all duration-300">
-            <span className="text-2xl block mb-2">🏛️</span>
-            <span className="text-sm font-medium text-emerald">{t('governmentSchemes', language)}</span>
-          </button>
-          <button className="p-4 glass-card text-center hover-lift transition-all duration-300">
-            <span className="text-2xl block mb-2">💳</span>
-            <span className="text-sm font-medium text-primary">{t('microLoans', language)}</span>
-          </button>
-        </div>
-      </div>
-
-      <Button 
-        variant="outline" 
-        className="w-full mt-6 animate-fade-in-up"
-        style={{ animationDelay: '0.6s' }}
-        onClick={() => setStep('start')}
-      >
-        Start Over
-      </Button>
-    </div>
-  );
+  return null; 
 };

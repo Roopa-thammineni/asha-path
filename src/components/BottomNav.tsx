@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, Briefcase, MessageCircle, User } from 'lucide-react';
+import { Home, BookOpen, Briefcase, MessageCircle, User, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useApp } from '@/contexts/AppContext';
 import { t } from '@/lib/translations';
@@ -7,24 +7,31 @@ import { t } from '@/lib/translations';
 interface NavItem {
   id: string;
   icon: React.ElementType;
-  labelKey: 'home' | 'learn' | 'jobs' | 'guide' | 'profile';
+  labelKey: string; // Changed to string to allow 'volunteer'
 }
-
-const navItems: NavItem[] = [
-  { id: 'home', icon: Home, labelKey: 'home' },
-  { id: 'learn', icon: BookOpen, labelKey: 'learn' },
-  { id: 'jobs', icon: Briefcase, labelKey: 'jobs' },
-  { id: 'guide', icon: MessageCircle, labelKey: 'guide' },
-  { id: 'profile', icon: User, labelKey: 'profile' },
-];
 
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  isRecruiter?: boolean; // Prop to handle different layouts
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange, isRecruiter }) => {
   const { language } = useApp();
+
+  // Define dynamic nav items based on role
+  const navItems: NavItem[] = isRecruiter 
+    ? [
+        { id: 'home', icon: Home, labelKey: 'home' },
+        { id: 'profile', icon: User, labelKey: 'profile' },
+      ]
+    : [
+        { id: 'home', icon: Home, labelKey: 'home' },
+        { id: 'learn', icon: BookOpen, labelKey: 'learn' },
+        { id: 'volunteer', icon: Heart, labelKey: 'volunteer' }, // New Volunteer Tab
+        { id: 'jobs', icon: Briefcase, labelKey: 'jobs' },
+        { id: 'profile', icon: User, labelKey: 'profile' },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card rounded-t-3xl border-t-0 safe-area-pb">
@@ -53,10 +60,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                 )}
               />
               <span className={cn(
-                'text-xs font-medium transition-all duration-300',
+                'text-[10px] font-medium transition-all duration-300',
                 isActive && 'font-semibold'
               )}>
-                {t(item.labelKey, language)}
+                {/* Fallback to ID if translation key is missing */}
+                {t(item.labelKey as any, language) || item.id}
               </span>
             </button>
           );

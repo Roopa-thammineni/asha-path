@@ -1,32 +1,25 @@
 import React from 'react';
-import { MapPin, Filter } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { JobCard } from '@/components/JobCard';
 import { useApp } from '@/contexts/AppContext';
 import { t } from '@/lib/translations';
-import { jobs } from '@/data/mockData';
 import { Job } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 export const JobsPage: React.FC = () => {
-  const { language } = useApp();
+  const { language, jobs } = useApp(); // Access global jobs list
   const { toast } = useToast();
 
   const handleAcceptJob = (job: Job) => {
-    const title = language === 'hi' 
-      ? job.titleHi 
-      : language === 'te' 
-      ? job.titleTe 
-      : job.title;
-
+    const title = language === 'hi' ? job.titleHi : language === 'te' ? job.titleTe : job.title;
     toast({
       title: '✅ Job Accepted!',
-      description: `${title} - ₹${job.pay}`,
+      description: `${title || job.title} - ₹${job.pay}`,
     });
   };
 
   return (
     <div className="min-h-screen pb-28 px-4 pt-6">
-      {/* Header */}
       <header className="mb-6 animate-fade-in-up">
         <h1 className="text-2xl font-bold text-gradient">
           {t('findWork', language)}
@@ -37,7 +30,7 @@ export const JobsPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Stats */}
+      {/* Stats Table */}
       <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in-up stagger-1">
         <div className="glass-card p-4 text-center">
           <p className="text-xl font-bold text-lavender-dark">{jobs.length}</p>
@@ -59,9 +52,7 @@ export const JobsPage: React.FC = () => {
           <button
             key={filter}
             className={`px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-              i === 0 
-                ? 'gradient-primary text-white shadow-soft' 
-                : 'glass-card text-foreground hover:shadow-soft'
+              i === 0 ? 'gradient-primary text-white' : 'glass-card text-foreground'
             }`}
           >
             {filter}
@@ -69,20 +60,23 @@ export const JobsPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Jobs List */}
+      {/* Jobs List - Reads from Shared Context */}
       <div className="space-y-4">
-        {jobs.map((job, index) => (
-          <div 
-            key={job.id}
-            className="animate-fade-in-up"
-            style={{ animationDelay: `${(index + 3) * 0.1}s` }}
-          >
-            <JobCard 
-              job={job} 
-              onAccept={handleAcceptJob}
-            />
+        {jobs.length > 0 ? (
+          jobs.map((job, index) => (
+            <div 
+              key={job.id}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${(index + 3) * 0.1}s` }}
+            >
+              <JobCard job={job} onAccept={handleAcceptJob} />
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-10 glass-card">
+            <p className="text-muted-foreground">No jobs posted yet.</p>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

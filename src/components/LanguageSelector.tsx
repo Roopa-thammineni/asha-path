@@ -1,61 +1,51 @@
 import React from 'react';
 import { Globe } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useApp } from '@/contexts/AppContext';
-import { Language } from '@/types';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-const languages: { code: Language; label: string; native: string }[] = [
-  { code: 'en', label: 'English', native: 'English' },
-  { code: 'hi', label: 'Hindi', native: 'हिंदी' },
-  { code: 'te', label: 'Telugu', native: 'తెలుగు' },
-];
-
-interface LanguageSelectorProps {
-  variant?: 'compact' | 'full';
-  className?: string;
-}
-
-export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
-  variant = 'compact',
-  className,
-}) => {
+export const LanguageSelector: React.FC = () => {
   const { language, setLanguage } = useApp();
 
-  if (variant === 'compact') {
-    const currentIndex = languages.findIndex(l => l.code === language);
-    const nextLang = languages[(currentIndex + 1) % languages.length];
-
-    return (
-      <Button
-        variant="icon"
-        size="icon"
-        onClick={() => setLanguage(nextLang.code)}
-        className={cn('gap-2 px-4', className)}
-      >
-        <Globe size={18} className="text-primary" />
-        <span className="text-sm font-semibold text-foreground">
-          {languages.find(l => l.code === language)?.native}
-        </span>
-      </Button>
-    );
-  }
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'hi', name: 'हिंदी' }, // Native names for instant recognition
+    { code: 'te', name: 'తెలుగు' },
+  ];
 
   return (
-    <div className={cn('flex gap-3', className)}>
-      {languages.map((lang) => (
-        <Button
-          key={lang.code}
-          variant={language === lang.code ? 'default' : 'outline'}
-          onClick={() => setLanguage(lang.code)}
-          className={cn(
-            'flex-1 h-16',
-            language === lang.code && 'shadow-glow'
-          )}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="default"
+          // Ensures a minimum 44px touch target on mobile
+          className="h-11 px-4 gap-2 rounded-2xl glass-card border-lavender-light/50 hover:bg-lavender-light/20"
         >
-          <span className="text-lg font-semibold">{lang.native}</span>
+          <Globe size={20} className="text-primary" />
+          <span className="font-medium text-sm">
+            {languages.find((l) => l.code === language)?.name}
+          </span>
         </Button>
-      ))}
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="glass-card border-lavender-light/50">
+        {languages.map((lang) => (
+          <DropdownMenuItem
+            key={lang.code}
+            onClick={() => setLanguage(lang.code as 'en' | 'hi' | 'te')}
+            className={`cursor-pointer px-6 py-3 text-base ${
+              language === lang.code ? 'bg-primary/10 text-primary font-bold' : ''
+            }`}
+          >
+            {lang.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

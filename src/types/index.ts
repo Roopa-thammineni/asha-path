@@ -1,4 +1,6 @@
 export type Language = 'en' | 'hi' | 'te';
+// Added the UserRole type for the three categories
+export type UserRole = 'woman' | 'recruiter' | 'developer';
 
 export interface BusinessIdea {
   id: string;
@@ -52,8 +54,11 @@ export interface LearningModule {
 
 export interface UserProfile {
   id: string;
+  role: UserRole; // Added role to the profile
   name: string;
-  phone: string;
+  phone?: string; // Optional for recruiters/developers
+  email?: string; // Added for recruiters/developers
+  username?: string; // Added for recruiters/developers
   location: string;
   budget: string;
   skills: string[];

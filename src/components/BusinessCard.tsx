@@ -76,4 +76,4 @@ export const BusinessCard: React.FC<BusinessCardProps> = ({ business, onSelect, 
       </div>
     </div>
   );
-};
+}; 

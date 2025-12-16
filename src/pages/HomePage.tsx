@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, BookOpen, MessageCircle, Sparkles, TrendingUp, Heart } from 'lucide-react';
+import { Briefcase, BookOpen, MessageCircle, Sparkles, TrendingUp, Users } from 'lucide-react';
 import { IconCard } from '@/components/IconCard';
 import { VoiceButton } from '@/components/VoiceButton';
 import { EmergencyButton } from '@/components/EmergencyButton';
@@ -27,29 +27,38 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen pb-28 px-4 pt-6">
-      {/* Header */}
+    <div className="min-h-screen pb-28 px-4 pt-6 flex flex-col">
+      {/* Updated Header with logo.png */}
       <header className="flex items-center justify-between mb-8 animate-fade-in-up">
-        <div>
-          <h1 className="text-2xl font-bold text-gradient">
-            {t('welcome', language)}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t('welcomeMessage', language)}
-          </p>
+        <div className="flex items-center gap-5">
+          {/* Reverted src to /logo.png as requested */}
+          <img 
+            src="/logo.png" 
+            alt="Shakti Logo" 
+            className="w-24 h-24 object-contain rounded-2xl shadow-lg transform transition-transform hover:scale-105" 
+          />
+          <div>
+            <h1 className="text-2xl font-black text-gradient leading-tight">
+              {t('welcome', language)}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1 font-medium">
+              {t('welcomeMessage', language)}
+            </p>
+          </div>
         </div>
         <LanguageSelector />
       </header>
 
       {/* Voice Button - Central Feature */}
-      <div className="flex justify-center my-10 animate-fade-in-up stagger-1">
+      <div className="flex justify-center my-6 animate-fade-in-up stagger-1">
         <VoiceButton size="xl" onPress={handleVoicePress} />
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="animate-fade-in-up stagger-2">
+      {/* Main Actions Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6 items-stretch">
+        <div className="animate-fade-in-up stagger-2 flex">
           <IconCard
+            className="w-full h-full"
             icon={MessageCircle}
             label={t('businessGuide', language)}
             variant="primary"
@@ -57,8 +66,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('guide')}
           />
         </div>
-        <div className="animate-fade-in-up stagger-3">
+        <div className="animate-fade-in-up stagger-3 flex">
           <IconCard
+            className="w-full h-full"
             icon={Briefcase}
             label={t('findWork', language)}
             variant="success"
@@ -66,8 +76,29 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('jobs')}
           />
         </div>
-        <div className="animate-fade-in-up stagger-4">
+      </div>
+
+      {/* Volunteer Tour Shortcut */}
+      <div 
+        onClick={() => onNavigate('volunteer')} 
+        className="glass-card p-5 mb-6 bg-gradient-to-r from-lavender-light/40 to-peach-light/40 border-dashed border-2 border-primary/20 cursor-pointer hover:scale-[1.02] transition-all duration-300 animate-fade-in-up stagger-4 shadow-soft"
+      >
+        <div className="flex items-center gap-5">
+          <div className="bg-primary text-white p-4 rounded-2xl shadow-glow">
+            <Users size={28} />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg text-primary">Join Education Tours</h3>
+            <p className="text-xs text-muted-foreground font-medium">Volunteer to teach in villages</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Secondary Actions Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="animate-fade-in-up stagger-5 flex">
           <IconCard
+            className="w-full h-full"
             icon={BookOpen}
             label={t('learnSkills', language)}
             variant="outline"
@@ -75,52 +106,55 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('learn')}
           />
         </div>
-        <div className="animate-fade-in-up stagger-5">
+        <div className="animate-fade-in-up stagger-6 flex">
           <IconCard
+            className="w-full h-full"
             icon={Sparkles}
             label={t('governmentSchemes', language)}
             variant="default"
             size="lg"
             badge="New"
-            onClick={() => onNavigate('guide')}
+            onClick={() => onNavigate('schemes')}
           />
         </div>
       </div>
 
       {/* Impact Stats */}
-      <div className="glass-card p-6 mb-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+      <div className="glass-card p-6 mb-6 animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
         <div className="flex items-center gap-2 mb-5">
           <div className="p-2 rounded-xl bg-primary/10">
             <TrendingUp size={20} className="text-primary" />
           </div>
-          <h2 className="font-semibold text-foreground">Community Impact</h2>
+          <h2 className="font-bold text-foreground">Community Impact</h2>
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-3 rounded-2xl bg-lavender-light/30">
-            <p className="text-2xl font-bold text-lavender-dark">
+        <div className="grid grid-cols-3 gap-3 items-stretch">
+          <div className="text-center p-3 rounded-2xl bg-lavender-light/30 flex flex-col items-center justify-center min-h-[90px]">
+            <p className="text-xl font-bold text-lavender-dark">
               {(impactStats.totalUsers / 1000).toFixed(1)}K
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Women</p>
+            <p className="text-[10px] text-muted-foreground mt-auto font-bold uppercase tracking-tighter">Women</p>
           </div>
-          <div className="text-center p-3 rounded-2xl bg-emerald-light/30">
-            <p className="text-2xl font-bold text-emerald-dark">
+          <div className="text-center p-3 rounded-2xl bg-emerald-light/30 flex flex-col items-center justify-center min-h-[90px]">
+            <p className="text-xl font-bold text-emerald-dark">
               {(impactStats.businessesStarted / 1000).toFixed(1)}K
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Businesses</p>
+            <p className="text-[10px] text-muted-foreground mt-auto font-bold uppercase tracking-tighter">Businesses</p>
           </div>
-          <div className="text-center p-3 rounded-2xl bg-blush-light/30">
-            <p className="text-2xl font-bold text-blush-dark">
+          <div className="text-center p-3 rounded-2xl bg-blush-light/30 flex flex-col items-center justify-center min-h-[90px]">
+            <p className="text-xl font-bold text-blush-dark">
               {impactStats.incomeGenerated}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Earned</p>
+            <p className="text-[10px] text-muted-foreground mt-auto font-bold uppercase tracking-tighter">Earned</p>
           </div>
         </div>
       </div>
 
       {/* Emergency Button */}
-      <div className="animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+      <div className="animate-fade-in-up mt-auto" style={{ animationDelay: '0.8s' }}>
         <EmergencyButton />
       </div>
     </div>
   );
 };
+
+export default HomePage;
